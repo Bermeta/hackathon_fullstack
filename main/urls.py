@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf.urls.static import static
+from django.views.decorators.cache import cache_page
 from rest_framework.routers import SimpleRouter
 from django.conf.urls.static import static
 from django.conf import settings
@@ -28,6 +29,7 @@ schema_view = get_schema_view(
    public=True,
    permission_classes=[permissions.AllowAny],
 )
+
 
 
 urlpatterns = [
