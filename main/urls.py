@@ -15,11 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-<<<<<<< HEAD
 from django.views.decorators.cache import cache_page
 from django.conf.urls.static import static
 from django.conf import settings
-=======
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework.routers import SimpleRouter
@@ -54,7 +52,7 @@ schema_view = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
->>>>>>> ec8a9be4887d293f6422d0e0739a45332f3c87b7
+
 
 urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
@@ -62,14 +60,9 @@ urlpatterns = [
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
     path('api/v1/accounts/', include('account.urls')),
-<<<<<<< HEAD
     # path('api/v1/reviews/', include('rating.urls')),
-]
-
-=======
     path('api/v1/', include(router.urls)),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
->>>>>>> ec8a9be4887d293f6422d0e0739a45332f3c87b7
