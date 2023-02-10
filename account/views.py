@@ -4,8 +4,6 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-
 from . import serializers
 from .send_email import send_reset_email, send_confirmation_email
 
@@ -45,6 +43,7 @@ class ActivationView(APIView):
 class LoginView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
 
+
 class LogoutView(GenericAPIView):
     serializer_class = serializers.LogoutSerializer
 
@@ -71,6 +70,7 @@ class ForgotPasswordView(APIView):
         except User.DoesNotExist:
             return Response('User with this email does not exist!', status=400)
 
+
 class RestorePasswordView(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -79,6 +79,7 @@ class RestorePasswordView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response('Password changed successfully!')
+
 
 class UserListApiView(ListAPIView):
     queryset = User.objects.all()
