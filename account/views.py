@@ -22,7 +22,7 @@ class RegistrationView(APIView):
             user = serializer.save()
             if user:
                 try:
-                    send_confirmation_email.delay(user.email, user.activation_code)
+                    send_confirm_email_task.delay(user.email, user.activation_code)
                 except:
                     return Response({'msg': 'Account registered, but troubles with mail!', 'data': serializer.data}, status=201)
             return Response(serializer.data, status=201)
