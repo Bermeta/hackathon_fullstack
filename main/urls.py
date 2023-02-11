@@ -18,7 +18,7 @@ router.register('products', ProductViewSet)
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="Shop API",
+      title="Rentik API",
       default_version='v1',
       description="Test description",
       terms_of_service="https://www.google.com/policies/terms/",
@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/v1/accounts/', include('account.urls')),
     path('api/v1/orders/', include('order.urls')),
     path('api/v1/', include(router.urls)),
+    path('api/v1/', include('product.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
