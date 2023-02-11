@@ -48,20 +48,6 @@ class ProductViewSet(ModelViewSet):
                 return Response('You didn\'t liked this post!', status=400)
             user.liked_posts.filter(post=post).delete()
             return Response('Your like is deleted!', status=204)
-
-
-class LikeCreateView(generics.CreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = serializers.LikeSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-
-class LikeDeleteView(generics.DestroyAPIView):
-    queryset = Like.objects.all()
-    permission_classes = (permissions.IsAuthenticated, IsAuthor)
-
         
     @action(['POST', 'GET'], detail=True)
     def reviews(self, request, pk):
@@ -91,4 +77,19 @@ class LikeDeleteView(generics.DestroyAPIView):
         review = product.reviews.get(owner=user)
         review.delete()
         return response.Response('Successfully deleted', status=204)
+
+
+class LikeCreateView(generics.CreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.LikeSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class LikeDeleteView(generics.DestroyAPIView):
+    queryset = Like.objects.all()
+    permission_classes = (permissions.IsAuthenticated, IsAuthor)
+
+        
     
