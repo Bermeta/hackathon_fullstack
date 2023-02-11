@@ -11,6 +11,7 @@ def send_confirmation_email(user, code):
         fail_silently=False
     )
 
+
 def send_reset_email(user):
     code = user.activation_code
     email = user.email

@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from product.models import Product, Like
+from product.models import Product, Like, Favorites
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -41,6 +40,19 @@ class LikedPostsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = 'post'
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['post_title'] = instance.post.title
+        preview = instance.post.preview
+        repr['post_preview'] = preview.url
+        return repr
+
+
+class FavoritePostsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favorites
+        fields = ('id', 'post')
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
