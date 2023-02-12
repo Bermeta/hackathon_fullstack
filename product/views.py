@@ -24,7 +24,6 @@ class ProductViewSet(ModelViewSet):
             return [permissions.IsAuthenticated(), IsAuthorOrAdminOrPostOwner()]
         else:
             return [permissions.IsAuthenticatedOrReadOnly()]
-            
 
     @action(['GET'], detail=True)
     def get_likes(self, request, pk):
@@ -77,6 +76,11 @@ class ProductViewSet(ModelViewSet):
         review = product.reviews.get(owner=user)
         review.delete()
         return response.Response('Successfully deleted', status=204)
+
+
+class ProductListAPIView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = serializers.ProductListSerializer
 
 
 class LikeCreateView(generics.CreateAPIView):
