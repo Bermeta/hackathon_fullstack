@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from . import serializers
 from .send_email import send_reset_email, send_confirmation_email
+from main.tasks import send_confirm_email_task
 
 User = get_user_model()
 
@@ -19,7 +20,7 @@ class RegistrationView(APIView):
             user = serializer.save()
             if user:
                 try:
-                    send_confirmation_email(user.email, user.activation_code)
+                    send_confirm_email_task.delay(user.email, user.activation_code)
                 except:
                     return Response({'msg': 'Account registered, but troubles with mail!', 'data': serializer.data}, status=201)
             return Response(serializer.data, status=201)
