@@ -1,9 +1,9 @@
 from rest_framework.viewsets import ModelViewSet
+from .models import Product, Favorites, Like
 from . import serializers
 from .permissions import IsAuthorOrAdminOrPostOwner, IsAuthor
 from rest_framework import permissions, generics, response
 from rest_framework.response import Response
-from .models import Like, Product
 from rest_framework.decorators import action
 from rating.serializers import ReviewActionSerializer, ReviewImages
 
@@ -26,13 +26,35 @@ class ProductViewSet(ModelViewSet):
             return [permissions.IsAuthenticatedOrReadOnly()]
 
     @action(['GET'], detail=True)
+    def get_favorites(self, request, pk):
+        post = self.get_object()
+        favorites = post.favorites.all()
+        serializer = serializers.FavoritePostsSerializer(instance=favorites, many=True)
+        return Response(serializer.data, status=200)
+
+    @action(['POST', 'DELETE'], detail=True)
+    def favorites(self, request, pk):
+        post = self.get_object()
+        user = request.user
+        if request.method == 'POST':
+            if user.favorites.filter(post=post).exists():
+                return Response('This post is already in favorites!',
+                                status=400)
+            Favorites.objects.create(owner=user, post=post)
+            return Response('Added to favorites!', status=201)
+        else:
+            if user.favorites.filter(post=post).exists():
+                user.favorites.filter(post=post).delete()
+                return Response('Deleted from favorites!', status=204)
+            return Response('Post is not found!', status=400)
+
+    @action(['GET'], detail=True)
     def get_likes(self, request, pk):
         post = self.get_object()
         likes = post.likes.all()
         serializer = serializers.LikeSerializer(instance=likes, many=True)
         return Response(serializer.data, status=200)
 
-    # ../api/v1/posts/id/like/
     @action(['POST', 'DELETE'], detail=True)
     def like(self, request, pk):
         post = self.get_object()
@@ -94,6 +116,3 @@ class LikeCreateView(generics.CreateAPIView):
 class LikeDeleteView(generics.DestroyAPIView):
     queryset = Like.objects.all()
     permission_classes = (permissions.IsAuthenticated, IsAuthor)
-
-        
-    
