@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import serializers
 from product.models import Product, Like, Favorites
 from rating.serializers import ReviewActionSerializer

@@ -100,6 +100,11 @@ class ProductViewSet(ModelViewSet):
         return response.Response('Successfully deleted', status=204)
 
 
+class ProductListAPIView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = serializers.ProductListSerializer
+
+
 class LikeCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.LikeSerializer

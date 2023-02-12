@@ -1,5 +1,5 @@
 from .celery import app
-from account.send_email import send_reset_email, send_confirmation_email
+from account.send_email import send_reset_email, send_confirmation_email, send_notification
 
 
 @app.task
