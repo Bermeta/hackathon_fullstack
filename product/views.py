@@ -1,3 +1,4 @@
+from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import ModelViewSet
 from .models import Product, Favorites, Like
 from . import serializers
@@ -5,7 +6,15 @@ from .permissions import IsAuthorOrAdminOrPostOwner, IsAuthor
 from rest_framework import permissions, generics, response
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from rating.serializers import ReviewActionSerializer, ReviewImages
+
+
+
+class StandartResultPagination(PageNumberPagination):
+    page_size = 9
+    page_query_param = 'page'
 
 
 class ProductViewSet(ModelViewSet):
@@ -103,6 +112,11 @@ class ProductViewSet(ModelViewSet):
 class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductListSerializer
+    pagination_class = StandartResultPagination
+    filter_backends = (SearchFilter, DjangoFilterBackend)
+    search_fields = ('title', 'brand', 'sex')
+    filterset_fields = ('sex', 'title', 'brand')
+
 
 
 class LikeCreateView(generics.CreateAPIView):

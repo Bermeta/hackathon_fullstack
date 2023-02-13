@@ -40,6 +40,7 @@ class Product(models.Model):
         return self.title
 
 
+
 class Like(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_posts')
     post = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='likes')
@@ -56,3 +57,4 @@ class Favorites(models.Model):
 
     class Meta:
         unique_together = ['owner', 'post']
+

@@ -37,6 +37,5 @@ urlpatterns = [
     path('api/v1/', include(router.urls)),
     path('api/v1/', include('product.urls')),
 ]
-
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
