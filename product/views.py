@@ -59,24 +59,24 @@ class ProductViewSet(ModelViewSet):
 
     @action(['GET'], detail=True)
     def get_likes(self, request, pk):
-        post = self.get_object()
-        likes = post.likes.all()
+        product = self.get_object()
+        likes = product.likes.all()
         serializer = serializers.LikeSerializer(instance=likes, many=True)
         return Response(serializer.data, status=200)
 
     @action(['POST', 'DELETE'], detail=True)
     def like(self, request, pk):
-        post = self.get_object()
+        product = self.get_object()
         user = request.user
         if request.method == 'POST':
-            if user.liked_posts.filter(post=post).exists():
-                return Response('This post is already liked!', status=400)
-            Like.objects.create(owner=user, post=post)
-            return Response('You liked the post!', status=201)
+            if user.liked_posts.filter(product=product).exists():
+                return Response('This product is already liked!', status=400)
+            Like.objects.create(owner=user, product=product)
+            return Response('You liked the product!', status=201)
         else:
             if not user.liked_posts.filter(post=post).exists():
-                return Response('You didn\'t liked this post!', status=400)
-            user.liked_posts.filter(post=post).delete()
+                return Response('You didn\'t liked this product!', status=400)
+            user.liked_posts.filter(product=product).delete()
             return Response('Your like is deleted!', status=204)
         
     @action(['POST', 'GET'], detail=True)

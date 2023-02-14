@@ -12,7 +12,6 @@ from product.views import ProductViewSet
 
 router = SimpleRouter()
 router.register('categories', CategoryViewSet)
-router.register('products', ProductViewSet)
 
 schema_view = get_schema_view(
    openapi.Info(
