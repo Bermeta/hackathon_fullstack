@@ -19,6 +19,10 @@ class StandartResultPagination(PageNumberPagination):
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
+    pagination_class = StandartResultPagination
+    filter_backends = (SearchFilter, DjangoFilterBackend)
+    search_fields = ('title', 'brand', 'sex')
+    filterset_fields = ('sex', 'title', 'brand')
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -107,15 +111,6 @@ class ProductViewSet(ModelViewSet):
         review = product.reviews.get(owner=user)
         review.delete()
         return response.Response('Successfully deleted', status=204)
-
-
-class ProductListAPIView(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = serializers.ProductListSerializer
-    pagination_class = StandartResultPagination
-    filter_backends = (SearchFilter, DjangoFilterBackend)
-    search_fields = ('title', 'brand', 'sex')
-    filterset_fields = ('sex', 'title', 'brand')
 
 
 

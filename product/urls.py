@@ -10,5 +10,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('likes/', views.LikeCreateView.as_view()),
     path('likes/<int:pk>/', views.LikeDeleteView.as_view()),
-    path('list/products/', cache_page(60)(views.ProductListAPIView.as_view()))
+    # path('list/products/', cache_page(60)(views.ProductListAPIView.as_view()))
 ]
