@@ -20,7 +20,7 @@ def get_message(message):
 
 
 @bot.message_handler(content_types=['text'])
-def lalala (message):
+def send_message(message):
     print(message.text)
     chat_id = message.chat.id
     if message.text == 'Показать вспе товары от RENTIK!':
