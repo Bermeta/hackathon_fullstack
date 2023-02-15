@@ -52,22 +52,22 @@ class LikeSerializer(serializers.ModelSerializer):
     def validate_data(self, attrs):
         request = self.context['request']
         user = request.user
-        post = attrs['post']
-        if post.likes.filter(owner=user).exists():
-            raise serializers.ValidationError('You already liked post!')
+        product = attrs['product']
+        if product.likes.filter(owner=user).exists():
+            raise serializers.ValidationError('You already liked product!')
         return attrs
 
 
 class LikedPostsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = 'post'
+        fields = 'product'
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['post_title'] = instance.post.title
-        preview = instance.post.preview
-        repr['post_preview'] = preview.url
+        repr['product_title'] = instance.product.title
+        preview = instance.product.preview
+        repr['product_preview'] = preview.url
 
         return repr
         
@@ -75,12 +75,12 @@ class LikedPostsSerializer(serializers.ModelSerializer):
 class FavoritePostsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
-        fields = ('id', 'post')
+        fields = ('id', 'product')
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['post_title'] = instance.post.title
-        preview = instance.post.preview
-        repr['post_preview'] = preview.url
+        repr['product_title'] = instance.product.title
+        preview = instance.product.preview
+        repr['product_preview'] = preview.url
         return repr
 

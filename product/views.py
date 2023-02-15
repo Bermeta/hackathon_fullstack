@@ -27,47 +27,47 @@ class ProductViewSet(ModelViewSet):
 
     @action(['GET'], detail=True)
     def get_favorites(self, request, pk):
-        post = self.get_object()
-        favorites = post.favorites.all()
+        product = self.get_object()
+        favorites = product.favorites.all()
         serializer = serializers.FavoritePostsSerializer(instance=favorites, many=True)
         return Response(serializer.data, status=200)
 
     @action(['POST', 'DELETE'], detail=True)
     def favorites(self, request, pk):
-        post = self.get_object()
+        product = self.get_object()
         user = request.user
         if request.method == 'POST':
-            if user.favorites.filter(post=post).exists():
-                return Response('This post is already in favorites!',
+            if user.favorites.filter(product=product).exists():
+                return Response('This product is already in favorites!',
                                 status=400)
-            Favorites.objects.create(owner=user, post=post)
+            Favorites.objects.create(owner=user, product=product)
             return Response('Added to favorites!', status=201)
         else:
-            if user.favorites.filter(post=post).exists():
-                user.favorites.filter(post=post).delete()
+            if user.favorites.filter(product=product).exists():
+                user.favorites.filter(product=product).delete()
                 return Response('Deleted from favorites!', status=204)
-            return Response('Post is not found!', status=400)
+            return Response('Product is not found!', status=400)
 
     @action(['GET'], detail=True)
     def get_likes(self, request, pk):
-        post = self.get_object()
-        likes = post.likes.all()
+        product = self.get_object()
+        likes = product.likes.all()
         serializer = serializers.LikeSerializer(instance=likes, many=True)
         return Response(serializer.data, status=200)
 
     @action(['POST', 'DELETE'], detail=True)
     def like(self, request, pk):
-        post = self.get_object()
+        product = self.get_object()
         user = request.user
         if request.method == 'POST':
-            if user.liked_posts.filter(post=post).exists():
-                return Response('This post is already liked!', status=400)
-            Like.objects.create(owner=user, post=post)
-            return Response('You liked the post!', status=201)
+            if user.liked_product.filter(product=product).exists():
+                return Response('This product is already liked!', status=400)
+            Like.objects.create(owner=user, product=product)
+            return Response('You liked the product!', status=201)
         else:
-            if not user.liked_posts.filter(post=post).exists():
-                return Response('You didn\'t liked this post!', status=400)
-            user.liked_posts.filter(post=post).delete()
+            if not user.liked_product.filter(product=product).exists():
+                return Response('You didn\'t liked this product!', status=400)
+            user.liked_product.filter(product=product).delete()
             return Response('Your like is deleted!', status=204)
         
     @action(['POST', 'GET'], detail=True)
