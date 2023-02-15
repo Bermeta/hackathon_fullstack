@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'ckeditor',
     'corsheaders',
+    # 'telebot',
 
     #my_apps
     'account',
@@ -83,7 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
+            ]
         },
     },
 ]
@@ -227,3 +228,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
+
+TELEGRAM_BOT_API_KEY = config('TELEGRAM_TOKEN')
+
