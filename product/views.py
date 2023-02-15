@@ -9,7 +9,23 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rating.serializers import ReviewActionSerializer, ReviewImages
+import logging
 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+
+file_handler = logging.FileHandler('logs/product.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 class StandartResultPagination(PageNumberPagination):
@@ -51,7 +67,8 @@ class ProductViewSet(ModelViewSet):
         user = request.user
         if request.method == 'POST':
             if user.favorites.filter(post=post).exists():
-                return Response('This post is already in favorites!',
+                logger.error('This product already in favorites!')
+                return Response('This product is already in favorites!',
                                 status=400)
             Favorites.objects.create(owner=user, post=post)
             return Response('Added to favorites!', status=201)
@@ -59,7 +76,9 @@ class ProductViewSet(ModelViewSet):
             if user.favorites.filter(post=post).exists():
                 user.favorites.filter(post=post).delete()
                 return Response('Deleted from favorites!', status=204)
-            return Response('Post is not found!', status=400)
+            logger.info('Request for unreal post!')
+            logger.error('Product not found!')
+            return Response('Product is not found!', status=400)
 
     @action(['GET'], detail=True)
     def get_likes(self, request, pk):
@@ -73,14 +92,16 @@ class ProductViewSet(ModelViewSet):
         product = self.get_object()
         user = request.user
         if request.method == 'POST':
-            if user.liked_posts.filter(product=product).exists():
+            if user.liked_products.filter(product=product).exists():
+                logger.error('This product is already liked!')
                 return Response('This product is already liked!', status=400)
             Like.objects.create(owner=user, product=product)
             return Response('You liked the product!', status=201)
         else:
-            if not user.liked_posts.filter(post=post).exists():
+            if not user.liked_products.filter(product=product).exists():
+                logger.error('You didn\'t liked this product!')
                 return Response('You didn\'t liked this product!', status=400)
-            user.liked_posts.filter(product=product).delete()
+            user.liked_products.filter(product=product).delete()
             return Response('Your like is deleted!', status=204)
         
     @action(['POST', 'GET'], detail=True)
@@ -92,6 +113,7 @@ class ProductViewSet(ModelViewSet):
             return response.Response(serializer, status=200)
         else:
             if product.reviews.filter(owner=request.user).exists():
+                logger.error('You already reviewed this product!')
                 return response.Response('You already reviewed this product!', status=400)
             data = request.data
             serializer = ReviewActionSerializer(data=data)
@@ -107,11 +129,11 @@ class ProductViewSet(ModelViewSet):
         product = self.get_object()  # Product.objects.get(id=pk)
         user = request.user
         if not product.reviews.filter(owner=user).exists():
+            logger.error('You didn\'t reviewed this product!')
             return response.Response('You didn\'t reviewed this product!', status=400)
         review = product.reviews.get(owner=user)
         review.delete()
         return response.Response('Successfully deleted', status=204)
-
 
 
 class LikeCreateView(generics.CreateAPIView):
