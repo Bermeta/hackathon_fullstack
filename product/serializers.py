@@ -21,7 +21,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     owner_email = serializers.ReadOnlyField(source='owner.email')
     owner = serializers.ReadOnlyField(source='owner.id')
-    reviews = ReviewActionSerializer(many=True)
+    reviews = ReviewActionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
