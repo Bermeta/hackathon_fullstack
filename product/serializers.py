@@ -2,6 +2,22 @@ from django.db.models import Avg
 from rest_framework import serializers
 from product.models import Product, Like, Favorites
 from rating.serializers import ReviewActionSerializer
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+
+file_handler = logging.FileHandler('logs/product.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -10,7 +26,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('owner', 'owner_email', 'title', 'price', 'preview', 'stock', 'sex')
-        
+
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         repr['rating'] = instance.reviews.aggregate(Avg('rating'))['rating__avg']
@@ -25,7 +41,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
-        
+
     @staticmethod
     def get_stars(instance):
         stars = {'5': instance.reviews.filter(rating=5).count(), '4': instance.reviews.filter(rating=4).count(),
@@ -54,6 +70,7 @@ class LikeSerializer(serializers.ModelSerializer):
         user = request.user
         product = attrs['product']
         if product.likes.filter(owner=user).exists():
+            logger.error('You already liked this product')
             raise serializers.ValidationError('You already liked product!')
         return attrs
 
@@ -65,12 +82,12 @@ class LikedPostsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['product_title'] = instance.product.title
-        preview = instance.product.preview
+        repr['product_title'] = instance.post.title
+        preview = instance.post.preview
         repr['product_preview'] = preview.url
 
         return repr
-        
+
 
 class FavoritePostsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -79,8 +96,7 @@ class FavoritePostsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['product_title'] = instance.product.title
-        preview = instance.product.preview
+        repr['product_title'] = instance.post.title
+        preview = instance.post.preview
         repr['product_preview'] = preview.url
         return repr
-

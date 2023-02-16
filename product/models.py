@@ -41,7 +41,7 @@ class Product(models.Model):
 
 
 class Like(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_product')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_products')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='likes')
 
     class Meta:
