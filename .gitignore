@@ -119,6 +119,8 @@ __pypackages__/
 # Celery stuff
 celerybeat-schedule
 celerybeat.pid
+celerybeat-schedule.db
+dump.rdb
 
 # SageMath parsed files
 *.sage.py
@@ -171,3 +173,4 @@ poetry.toml
 .ruff_cache/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+.idea

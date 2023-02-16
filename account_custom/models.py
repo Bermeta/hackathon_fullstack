@@ -1,8 +1,24 @@
-
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+
+file_handler = logging.FileHandler('logs/account.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 class UserManager(BaseUserManager):
@@ -28,8 +44,10 @@ class UserManager(BaseUserManager):
         kwargs.setdefault('is_superuser', True)
         kwargs.setdefault('is_active', True)
         if kwargs.get('is_staff') is not True:
+            logger.error('Superuser must have status is_staff=True!')
             raise ValueError('Superuser must have status is_staff=True!')
         if kwargs.get('is_superuser') is not True:
+            logger.error('Superuser must have status is_superuser=True!')
             raise ValueError('Superuser must have status is_superuser=True!')
         return self._create_user(email, password, **kwargs)
 
