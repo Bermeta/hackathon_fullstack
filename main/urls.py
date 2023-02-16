@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.views.generic import TemplateView
 from django.urls import path, include, re_path
 from django.conf.urls.static import static
 from django.views.decorators.cache import cache_page
@@ -31,7 +32,8 @@ urlpatterns = [
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
-    path('api/v1/accounts/', include('account.urls')),
+    path('accounts/', include('allauth.urls')),
+    path('api/v1/accounts/', include('account_custom.urls')),
     path('api/v1/orders/', include('order.urls')),
     path('api/v1/', include(router.urls)),
     path('api/v1/', include('product.urls')),
