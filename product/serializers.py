@@ -56,6 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
         rating = repr['rating']
         rating['ratings_count'] = instance.reviews.count()
         repr['stars'] = self.get_stars(instance)
+        return repr
 
 
 class LikeSerializer(serializers.ModelSerializer):
