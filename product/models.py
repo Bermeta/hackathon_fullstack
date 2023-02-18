@@ -52,7 +52,7 @@ class Favorites(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE,
                               related_name='favorites')
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
-                             related_name='favorites')
+                                related_name='favorites')
 
     class Meta:
         unique_together = ['owner', 'product']

@@ -96,7 +96,7 @@ class FavoritePostsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['product_title'] = instance.post.title
-        preview = instance.post.preview
+        repr['product_title'] = instance.product.title
+        preview = instance.product.preview
         repr['product_preview'] = preview.url
         return repr
