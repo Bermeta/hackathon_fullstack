@@ -100,11 +100,3 @@ class RestorePasswordSerializer(serializers.Serializer):
         user.save()
         logger.info('Password was changed!')
         return user
-
-
-
-
-
-
-
-

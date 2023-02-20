@@ -13,7 +13,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rating.serializers import ReviewActionSerializer, ReviewImages
 import logging
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -62,25 +61,25 @@ class ProductViewSet(ModelViewSet):
 
     @action(['GET'], detail=True)
     def get_favorites(self, request, pk):
-        post = self.get_object()
-        favorites = post.favorites.all()
+        product = self.get_object()
+        favorites = product.favorites.all()
         serializer = serializers.FavoritePostsSerializer(instance=favorites, many=True)
         return Response(serializer.data, status=200)
 
     @action(['POST', 'DELETE'], detail=True)
     def favorites(self, request, pk):
-        post = self.get_object()
+        product = self.get_object()
         user = request.user
         if request.method == 'POST':
-            if user.favorites.filter(post=post).exists():
+            if user.favorites.filter(product=product).exists():
                 logger.error('This product already in favorites!')
                 return Response('This product is already in favorites!',
                                 status=400)
-            Favorites.objects.create(owner=user, post=post)
+            Favorites.objects.create(owner=user, product=product)
             return Response('Added to favorites!', status=201)
         else:
-            if user.favorites.filter(post=post).exists():
-                user.favorites.filter(post=post).delete()
+            if user.favorites.filter(product=product).exists():
+                user.favorites.filter(product=product).delete()
                 return Response('Deleted from favorites!', status=204)
             logger.info('Request for unreal post!')
             logger.error('Product not found!')
@@ -109,7 +108,7 @@ class ProductViewSet(ModelViewSet):
                 return Response('You didn\'t liked this product!', status=400)
             user.liked_products.filter(product=product).delete()
             return Response('Your like is deleted!', status=204)
-        
+
     @action(['POST', 'GET'], detail=True)
     def reviews(self, request, pk):
         product = self.get_object()

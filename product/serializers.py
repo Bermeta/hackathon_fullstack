@@ -5,7 +5,6 @@ from rating.serializers import ReviewActionSerializer
 from rating.models import Review
 import logging
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -34,7 +33,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'owner', 'owner_email', 'title', 'price', 'preview', 'stock', 'sex')
-        
+
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         repr['rating'] = instance.reviews.aggregate(Avg('rating'))['rating__avg']
@@ -52,11 +51,15 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
+    @staticmethod
+    def get_stars(instance):
+        stars = {'5': instance.reviews.filter(rating=5).count(), '4': instance.reviews.filter(rating=4).count(),
+                 '3': instance.reviews.filter(rating=3).count(), '2': instance.reviews.filter(rating=2).count(),
+                 '1': instance.reviews.filter(rating=1).count()}
+
     def get_ratings_detail(self, obj):
         stars = Review.objects.filter(product=obj)
-
         from collections import Counter
-
         stars = Counter(stars.values_list("rating", flat=True))
         return stars
 
@@ -101,12 +104,11 @@ class LikedPostsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['product_title'] = instance.post.title
-        preview = instance.post.preview
+        repr['product_title'] = instance.product.title
+        preview = instance.product.preview
         repr['product_preview'] = preview.url
-
         return repr
-        
+
 
 class FavoritePostsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -115,8 +117,7 @@ class FavoritePostsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['product_title'] = instance.post.title
-        preview = instance.post.preview
+        repr['product_title'] = instance.product.title
+        preview = instance.product.preview
         repr['product_preview'] = preview.url
         return repr
-

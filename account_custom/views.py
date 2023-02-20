@@ -105,16 +105,3 @@ class RestorePasswordView(APIView):
 class UserListApiView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
-
-
-
-
-
-
-
-
-
-
-
-
-
