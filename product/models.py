@@ -40,6 +40,12 @@ class Product(models.Model):
         return self.title
 
 
+class ProductImages(models.Model):
+    title = models.CharField(max_length=100, blank=True)
+    image = models.ImageField(upload_to='images/')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+
+
 class Like(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liked_products')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='likes')
