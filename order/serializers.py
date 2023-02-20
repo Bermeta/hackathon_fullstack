@@ -37,8 +37,6 @@ class OrderSerializer(serializers.ModelSerializer):
                 OrderItem.objects.create(order=order, product=product['product'], quantity=product['quantity'])
             except KeyError:
                 OrderItem.objects.create(order=order, product=product['product'])
-
-        logger.info(f'{user} created new order!')
         return order
 
     def to_representation(self, instance):
