@@ -1,7 +1,8 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from product.models import Product, Like, Favorites
+from product.models import Product, Like, Favorites, ProductImages
 from rating.serializers import ReviewActionSerializer
+from rating.models import Review
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,12 +21,18 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
+class ProductImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImages
+        fields = '__all__'
+
+
 class ProductListSerializer(serializers.ModelSerializer):
     owner_email = serializers.ReadOnlyField(source='owner.email')
 
     class Meta:
         model = Product
-        fields = ('owner', 'owner_email', 'title', 'price', 'preview', 'stock', 'sex')
+        fields = ('id', 'owner', 'owner_email', 'title', 'price', 'preview', 'stock', 'sex')
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
@@ -35,8 +42,10 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     owner_email = serializers.ReadOnlyField(source='owner.email')
+    images = ProductImagesSerializer(many=True, read_only=False, required=False)
     owner = serializers.ReadOnlyField(source='owner.id')
     reviews = ReviewActionSerializer(many=True, read_only=True)
+    stars = serializers.SerializerMethodField('get_ratings_detail')
 
     class Meta:
         model = Product
@@ -47,14 +56,27 @@ class ProductSerializer(serializers.ModelSerializer):
         stars = {'5': instance.reviews.filter(rating=5).count(), '4': instance.reviews.filter(rating=4).count(),
                  '3': instance.reviews.filter(rating=3).count(), '2': instance.reviews.filter(rating=2).count(),
                  '1': instance.reviews.filter(rating=1).count()}
+
+    def get_ratings_detail(self, obj):
+        stars = Review.objects.filter(product=obj)
+        from collections import Counter
+        stars = Counter(stars.values_list("rating", flat=True))
         return stars
+
+    # @staticmethod
+    # def get_stars(instance):
+    #     stars = {'5': instance.reviews.filter(rating=5).count(), '4': instance.reviews.filter(rating=4).count(),
+    #              '3': instance.reviews.filter(rating=3).count(), '2': instance.reviews.filter(rating=2).count(),
+    #              '1': instance.reviews.filter(rating=1).count()}
+    #     return stars
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['rating'] = instance.reviews.aggregate(Avg('rating'))
-        rating = repr['rating']
-        rating['ratings_count'] = instance.reviews.count()
-        repr['stars'] = self.get_stars(instance)
+        repr['rating_avg'] = instance.reviews.aggregate(Avg('rating'))['rating__avg']
+        # rating_avg = repr['rating_avg']
+        # rating['ratings_count'] = instance.reviews.count()
+        # repr['stars'] = self.get_stars(instance)
+        return repr
 
 
 class LikeSerializer(serializers.ModelSerializer):

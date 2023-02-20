@@ -7,6 +7,8 @@ from rest_framework import permissions, generics, response
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rating.serializers import ReviewActionSerializer, ReviewImages
 import logging
@@ -52,6 +54,10 @@ class ProductViewSet(ModelViewSet):
             return [permissions.IsAuthenticated(), IsAuthorOrAdminOrPostOwner()]
         else:
             return [permissions.IsAuthenticatedOrReadOnly()]
+
+    @method_decorator(cache_page(60))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     @action(['GET'], detail=True)
     def get_favorites(self, request, pk):
