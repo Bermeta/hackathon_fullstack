@@ -1,6 +1,6 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from product.models import Product, Like, Favorites
+from product.models import Product, Like, Favorites, ProductImages
 from rating.serializers import ReviewActionSerializer
 from rating.models import Review
 import logging
@@ -22,6 +22,12 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
+class ProductImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImages
+        fields = '__all__'
+
+
 class ProductListSerializer(serializers.ModelSerializer):
     owner_email = serializers.ReadOnlyField(source='owner.email')
 
@@ -37,6 +43,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     owner_email = serializers.ReadOnlyField(source='owner.email')
+    images = ProductImagesSerializer(many=True, read_only=False, required=False)
     owner = serializers.ReadOnlyField(source='owner.id')
     reviews = ReviewActionSerializer(many=True, read_only=True)
     stars = serializers.SerializerMethodField('get_ratings_detail')
