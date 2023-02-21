@@ -27,3 +27,13 @@ def send_notification(user_email, order_id, price):
         [user_email],
         fail_silently=False
     )
+
+
+def send_recommendation(user_email, order, *args):
+    send_mail(
+        'Рекомендация для покупок!',
+        f'Вы сделали заказ товары: {[i["product"].title for i in order].replace("[", "").replace("]", "")} в количестве: {[i["quantity"] for i in order]}, мы также рекомендуем вам эти: {[i.title for i in args[0]]} товары из данных категорий с наивысшим рейтингом!;)',
+        'finally@done.com',
+        [user_email],
+        fail_silently=False
+    )

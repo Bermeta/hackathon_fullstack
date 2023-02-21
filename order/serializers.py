@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
 from product.models import Product
-
+from django.db.models import Avg
+from account_custom.send_email import send_recommendation
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_title = serializers.ReadOnlyField(source='product.title')
@@ -25,6 +26,19 @@ class OrderSerializer(serializers.ModelSerializer):
         request = self.context['request']
         user = request.user
         total_sum = 0
+        result = []
+        for product in products:
+            category = product['product'].category
+            objects = Product.objects.filter(category=category)
+
+            rating = 0
+            res = None
+            for i in objects:
+                if i.reviews.aggregate(Avg('rating'))['rating__avg'] > rating:
+                    rating = i.reviews.aggregate(Avg('rating'))['rating__avg']
+                    res = i
+            result.append(res)
+        send_recommendation(user, products, result)
         for product in products:
             try:
                 total_sum += product['quantity'] * product['product'].price
@@ -44,3 +58,13 @@ class OrderSerializer(serializers.ModelSerializer):
         repr['products'] = OrderItemSerializer(instance.items.all(), many=True).data
         repr.pop('product')
         return repr
+
+
+
+
+
+
+
+
+
+
