@@ -19,4 +19,3 @@ class IsAuthorOrAdminOrPostOwner(permissions.BasePermission):
             return True
         elif request.user == obj.owner:
             return True
-

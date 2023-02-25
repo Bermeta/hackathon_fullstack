@@ -63,19 +63,9 @@ class ProductSerializer(serializers.ModelSerializer):
         stars = Counter(stars.values_list("rating", flat=True))
         return stars
 
-    # @staticmethod
-    # def get_stars(instance):
-    #     stars = {'5': instance.reviews.filter(rating=5).count(), '4': instance.reviews.filter(rating=4).count(),
-    #              '3': instance.reviews.filter(rating=3).count(), '2': instance.reviews.filter(rating=2).count(),
-    #              '1': instance.reviews.filter(rating=1).count()}
-    #     return stars
-
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         repr['rating_avg'] = instance.reviews.aggregate(Avg('rating'))['rating__avg']
-        # rating_avg = repr['rating_avg']
-        # rating['ratings_count'] = instance.reviews.count()
-        # repr['stars'] = self.get_stars(instance)
         return repr
 
 

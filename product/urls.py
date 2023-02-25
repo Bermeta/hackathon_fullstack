@@ -8,6 +8,4 @@ router.register('product', views.ProductViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path('likes/', views.LikeCreateView.as_view()),
-    # path('likes/<int:pk>/', views.LikeDeleteView.as_view()),
 ]

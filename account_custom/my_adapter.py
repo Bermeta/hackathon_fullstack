@@ -20,4 +20,3 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             user.save()
             send_confirm_email_task.delay(user.email, user.activation_code)
             return self.respond_user_inactive(request, user)
-

@@ -4,6 +4,7 @@ from product.models import Product
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from main.tasks import send_notification_task
+from account_custom.send_email import send_recommendation
 
 User = get_user_model()
 

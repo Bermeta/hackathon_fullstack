@@ -38,8 +38,8 @@ urlpatterns = [
     path('home/', TemplateView.as_view(template_name='dashboard/home.html'), name='home'),
     path('api/v1/accounts/', include('account_custom.urls')),
     path('api/v1/orders/', include('order.urls')),
+    path('api/v1/reviews/', include('rating.urls')),
     path('api/v1/', include(router.urls)),
     path('api/v1/', include('product.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

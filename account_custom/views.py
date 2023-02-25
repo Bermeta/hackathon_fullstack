@@ -9,7 +9,6 @@ from .send_email import send_reset_email, send_confirmation_email
 from main.tasks import send_confirm_email_task
 import logging
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
